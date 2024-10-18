@@ -1,4 +1,5 @@
-import fs from "fs";
+import fs from 'node:fs/promises';
+import { v4 as uuidv4 } from 'uuid';
 // TODO: Define a City class with name and id properties
 class City {
   name: string; id: string;
@@ -11,12 +12,12 @@ class City {
 class HistoryService {
   // TODO: Define a read method that reads from the searchHistory.json file
   private async read() {
-    const data=fs.readFileSync('searchHistory.json','utf8');
-    return data;
+    const data=fs.readFile('db/db.json','utf8');                                                        //might need changed 
+    return await data; 
   }
   // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
   private async write(cities: City[]) {
-    fs.writeFileSync('searchHistory.json',JSON.stringify(cities));
+    return await fs.writeFile('db/db.json',JSON.stringify(cities, null, '\t'));
   }
   // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
   async getCities() {
@@ -36,8 +37,8 @@ class HistoryService {
   async removeCity(id: string) {
     const data=await this.read();   //gets the list of cities
     const cities=JSON.parse(data);   //parses the list of cities
-    const newCities=cities.filter(city=>city.id!==id);  //filters out the city with the id to be removed
-    await this.write(newCities);                        //writes the updated list of cities to the searchHistory
+    const newCities=cities.filter((city: City) => city.id !== id);   //filters out the city with the matching id
+    await this.write(newCities);   //writes the updated list of cities to the searchHistory.json file
   }
 }
 
